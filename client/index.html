@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="NexEditor — Real-time collaborative code editor powered by CRDTs and WebSockets. Open a room, share the link, and code together instantly."
+    />
+    <title>NexEditor — Real-Time Collaborative Editor</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+
+    <script type="importmap">
+    {
+      "imports": {
+        "yjs":                        "https://esm.sh/yjs@13.6.23",
+        "y-protocols/awareness.js":   "https://esm.sh/y-protocols@1.0.6/awareness.js",
+        "codemirror":                 "https://esm.sh/codemirror@6",
+        "@codemirror/theme-one-dark": "https://esm.sh/@codemirror/theme-one-dark@6",
+        "@codemirror/lang-javascript":"https://esm.sh/@codemirror/lang-javascript@6",
+        "y-codemirror.next":          "https://esm.sh/y-codemirror.next?deps=yjs@13.6.23,y-protocols@1.0.6",
+        "socket.io-client":           "/socket.io/socket.io.esm.min.js"
+      }
+    }
+    </script>
+
+    <link rel="stylesheet" href="./style.css" />
+
+  </head>
+
+  <body>
+
+    <header id="header" role="banner">
+      <div class="header-left">
+        <div class="logo">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 6L3 12L8 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16 6L21 12L16 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13 4L11 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span class="logo-text">NexEditor</span>
+        </div>
+        <div class="connection-badge" id="connection-badge" aria-live="polite">
+          <span class="connection-dot" id="connection-dot"></span>
+          <span class="connection-label" id="connection-label">Connecting…</span>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <div class="room-pill" aria-label="Current room ID">
+          <span class="room-label">ROOM</span>
+          <span class="room-id-text" id="room-id-display">—</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button id="copy-btn" aria-label="Copy invite link to clipboard">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+            <path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Copy Invite Link
+        </button>
+      </div>
+    </header>
+
+    <main id="main" role="main">
+
+      <div id="editor-wrapper">
+        <div id="editor" aria-label="Collaborative code editor"></div>
+      </div>
+
+      <aside id="sidebar" aria-label="Active users panel">
+        <div class="sidebar-header">
+          <span class="sidebar-title">Active Users</span>
+          <span class="user-count" id="user-count">0</span>
+        </div>
+        <div id="user-list" role="list" aria-label="List of connected users">
+        </div>
+      </aside>
+
+    </main>
+
+    <script type="module" src="./ui.js"></script>
+
+  </body>
+</html>
