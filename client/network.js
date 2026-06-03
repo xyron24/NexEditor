@@ -4,8 +4,9 @@ import {
   applyAwarenessUpdate,
   removeAwarenessStates,
 } from 'y-protocols/awareness.js';
-import { io } from 'socket.io-client';
 import { ydoc, awareness } from './crdt.js';
+
+const io = window.io;
 
 const guestName = 'Guest_' + Math.floor(Math.random() * 900 + 100);
 const hue = Math.floor(Math.random() * 360);
@@ -59,6 +60,12 @@ export function connect(roomId) {
       color: guestColor,
     });
 
+    const stateVector = Y.encodeStateVector(ydoc);
+    socket.emit('sync-step-1', {
+      roomId,
+      stateVector: Array.from(stateVector)
+    });
+
     if (reconnectBuffer.length > 0) {
       const merged = Y.mergeUpdates(reconnectBuffer);
       reconnectBuffer = [];
@@ -88,6 +95,32 @@ export function connect(roomId) {
       Y.applyUpdate(ydoc, new Uint8Array(update), 'remote');
     } catch (err) {
       console.error('[network] Failed to apply remote CRDT update:', err);
+    }
+  });
+
+  socket.on('sync-step-1', ({ stateVector, targetSocketId }) => {
+    try {
+      const update = Y.encodeStateAsUpdate(ydoc, new Uint8Array(stateVector));
+      socket.emit('sync-step-2', {
+        targetSocketId,
+        update: Array.from(update)
+      });
+      
+      const awarenessState = encodeAwarenessUpdate(awareness, [awareness.clientID]);
+      socket.emit('cursor-update', {
+        roomId: currentRoomId,
+        update: Array.from(awarenessState)
+      });
+    } catch (err) {
+      console.error('[network] Failed to compute sync-step-2:', err);
+    }
+  });
+
+  socket.on('sync-step-2', ({ update }) => {
+    try {
+      Y.applyUpdate(ydoc, new Uint8Array(update), 'remote');
+    } catch (err) {
+      console.error('[network] Failed to apply sync-step-2:', err);
     }
   });
 

@@ -1,49 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="NexEditor — Real-time collaborative code editor powered by CRDTs and WebSockets. Open a room, share the link, and code together instantly."
-    />
-    <title>NexEditor — Real-Time Collaborative Editor</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="NexEditor — Real-time collaborative code editor powered by CRDTs and WebSockets. Open a room, share the link, and code together instantly." />
+  <title>NexEditor — Real-Time Collaborative Editor</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+
+  <script src="/socket.io/socket.io.js"></script>
 
 
-    <script type="importmap">
+  <script type="importmap">
     {
       "imports": {
-        "yjs":                        "https://esm.sh/yjs@13.6.23",
-        "y-protocols/awareness.js":   "https://esm.sh/y-protocols@1.0.6/awareness.js",
-        "codemirror":                 "https://esm.sh/codemirror@6",
+        "yjs":                        "https://esm.sh/yjs@13",
+        "y-protocols/awareness.js":   "https://esm.sh/y-protocols@1/awareness.js",
+        "codemirror":                 "https://esm.sh/codemirror@6.0.1",
+        "@codemirror/view":           "https://esm.sh/@codemirror/view@6",
+        "@codemirror/state":          "https://esm.sh/@codemirror/state@6",
         "@codemirror/theme-one-dark": "https://esm.sh/@codemirror/theme-one-dark@6",
         "@codemirror/lang-javascript":"https://esm.sh/@codemirror/lang-javascript@6",
-        "y-codemirror.next":          "https://esm.sh/y-codemirror.next?deps=yjs@13.6.23,y-protocols@1.0.6",
-        "socket.io-client":           "/socket.io/socket.io.esm.min.js"
+        "y-codemirror.next":          "https://esm.sh/y-codemirror.next@0.3.5"
       }
     }
     </script>
 
-    <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./style.css" />
 
-  </head>
+</head>
 
-  <body>
+<body>
+  <div id="landing-page">
+    <div class="landing-card">
+      <h1 class="landing-title">&lt;/&gt; NexEditor</h1>
+      <p class="landing-subtitle">Real-time collaborative text editing at the speed of your thoughts.</p>
 
+      <div class="landing-actions">
+        <button id="btn-create-room" class="btn-primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Create New Room
+        </button>
+
+        <div class="landing-divider"><span>OR</span></div>
+
+        <div class="join-room-form">
+          <input type="text" id="input-room-id" placeholder="Enter Room ID" autocomplete="off" spellcheck="false" />
+          <button id="btn-join-room" class="btn-secondary">Join</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="app-container" style="display: none;">
     <header id="header" role="banner">
       <div class="header-left">
         <div class="logo">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M8 6L3 12L8 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M16 6L21 12L16 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M13 4L11 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M8 6L3 12L8 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path d="M16 6L21 12L16 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path d="M13 4L11 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
           </svg>
           <span class="logo-text">NexEditor</span>
         </div>
@@ -61,12 +87,13 @@
       </div>
 
       <div class="header-right">
-        <button id="copy-btn" aria-label="Copy invite link to clipboard">
+        <button id="copy-btn" aria-label="Copy room ID to clipboard">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
-            <path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2" />
+            <path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" />
           </svg>
-          Copy Invite Link
+          Copy Room ID
         </button>
       </div>
     </header>
@@ -87,8 +114,10 @@
       </aside>
 
     </main>
+  </div>
 
-    <script type="module" src="./ui.js"></script>
+  <script type="module" src="./ui.js"></script>
 
-  </body>
+</body>
+
 </html>

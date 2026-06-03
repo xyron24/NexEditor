@@ -53,6 +53,25 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('sync-step-1', ({ roomId, stateVector }) => {
+    try {
+      socket.broadcast.to(roomId).emit('sync-step-1', {
+        stateVector,
+        targetSocketId: socket.id
+      });
+    } catch (err) {
+      console.error('sync-step-1 error:', err);
+    }
+  });
+
+  socket.on('sync-step-2', ({ targetSocketId, update }) => {
+    try {
+      io.to(targetSocketId).emit('sync-step-2', { update });
+    } catch (err) {
+      console.error('sync-step-2 error:', err);
+    }
+  });
+
   socket.on('cursor-update', ({ roomId, update }) => {
     try {
       socket.broadcast.to(roomId).emit('cursor-update', { update });
