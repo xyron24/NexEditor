@@ -1,10 +1,10 @@
-# ⚡ NexEditor — Real-Time Collaborative Code Editor (MVP)
+# NexEditor — Real-Time Collaborative Code Editor (MVP)
 
 NexEditor is a high-performance, real-time collaborative text editor designed for synchronous developer collaboration. Built on a **"Thick Client, Thin Server"** architecture, all algorithmic state resolution, history, and conflict resolution happen at the edge (the users' browsers), while the backend acts strictly as a high-speed, stateless Pub/Sub message relay.
 
 ---
 
-## 📸 Working Demo
+## Working Demo
 
 Here is a recording showing multi-client real-time synchronization, user presence tracking, and cursor color sync:
 
@@ -12,7 +12,7 @@ Here is a recording showing multi-client real-time synchronization, user presenc
 
 ---
 
-## 🚀 Unique Architectural Highlights
+## Unique Architectural Highlights
 
 This editor is not a simple text synchronization app. It is engineered with specific distributed systems and UI performance optimizations:
 
@@ -43,7 +43,7 @@ The server has **zero knowledge** of CRDT mathematics, document structure, or te
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 * **Frontend**: Vanilla JavaScript (ES6+), CodeMirror 6, Yjs, `y-codemirror.next`, `socket.io-client` (ES Modules imported via CDN).
 * **Backend**: Node.js, Express, `socket.io`.
@@ -51,7 +51,7 @@ The server has **zero knowledge** of CRDT mathematics, document structure, or te
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 NexEditor/
@@ -71,7 +71,7 @@ NexEditor/
 
 ---
 
-## 🏁 Getting Started
+## Getting Started
 
 ### Prerequisites
 * Node.js (version 18 or higher)
