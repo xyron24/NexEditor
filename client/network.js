@@ -105,7 +105,7 @@ export function connect(roomId) {
         targetSocketId,
         update: Array.from(update)
       });
-      
+
       const awarenessState = encodeAwarenessUpdate(awareness, [awareness.clientID]);
       socket.emit('cursor-update', {
         roomId: currentRoomId,

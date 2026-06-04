@@ -469,7 +469,32 @@ body {
   font-family: var(--font-ui);
 }
 
+.grid-background {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  background-image: linear-gradient(to right, rgba(88, 166, 255, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(88, 166, 255, 0.15) 1px, transparent 1px);
+  background-size: 20px 30px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 70% 60% at 50% 0%,
+    #000 60%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 70% 60% at 50% 0%,
+    #000 60%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
 .landing-card {
+  position: relative;
+  z-index: 1;
   background: rgba(22, 27, 34, 0.6);
   border: 1px solid var(--border);
   border-radius: 16px;
