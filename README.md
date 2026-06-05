@@ -1,4 +1,4 @@
-# NexEditor — Real-Time Collaborative Code Editor
+# NexEditor - Real-Time Collaborative Code Editor
 
 NexEditor is a high-performance, real-time collaborative text editor designed for synchronous developer collaboration. Built on a **"Thick Client, Thin Server"** architecture, all algorithmic state resolution, history, and conflict resolution happen at the edge (the users' browsers), while the backend acts strictly as a high-speed, stateless Pub/Sub message relay.
 
