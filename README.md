@@ -8,7 +8,7 @@ NexEditor is a high-performance, real-time collaborative text editor designed fo
 
 Here is a recording showing multi-client real-time synchronization, user presence tracking, and cursor color sync:
 
-![NexEditor Real-time Collaboration Demo](./demo.webp)
+![NexEditor Real-time Collaboration Demo](./resources/demo.webp)
 
 ---
 
@@ -58,7 +58,9 @@ NexEditor/
 ├── package.json         # Node.js dependencies & npm scripts
 ├── .gitignore           # Standard git exclusion patterns
 ├── README.md            # You are here!
-├── demo.webp            # Demo animation showing collaborative editing
+├── resources/           # Project assets (architecture diagram, demo recording, etc.)
+│   ├── NexEditorArchitecture.png
+│   └── demo.webp        # Demo animation showing collaborative editing
 ├── server/
 │   └── index.js         # Stateless Express + Socket.io relay server
 └── client/
