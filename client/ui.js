@@ -70,6 +70,14 @@ window.addEventListener('auth-complete', (e) => {
   if (!username) {
     sessionStorage.setItem('nexeditor_guest_session', 'true');
   }
+  
+  // Update username display on landing page immediately without reloading
+  const usernameEl = document.getElementById('landing-username');
+  if (usernameEl) {
+    const name = localStorage.getItem('nexeditor_username');
+    usernameEl.textContent = name || 'Anonymous Guest';
+  }
+
   handleRouting();
 });
 
