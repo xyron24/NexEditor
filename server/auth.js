@@ -6,7 +6,7 @@ import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 
-const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL || 'file:./dev.db' });
+const adapter = new PrismaBetterSqlite3({ url: 'file:./dev.db' });
 const prisma = new PrismaClient({ adapter });
 
 const router = express.Router();
