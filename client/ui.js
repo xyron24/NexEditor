@@ -4,11 +4,19 @@ import { oneDark } from '@codemirror/theme-one-dark';
 import { javascript } from '@codemirror/lang-javascript';
 import { yCollab } from 'y-codemirror.next';
 import { ytext, awareness } from './crdt.js';
-import { connect, guestName, guestColor } from './network.js';
+import { connect, guestName, guestColor, updateGuestName } from './network.js';
 
 let view = null;
 
+function isUserAuthorized() {
+  return localStorage.getItem('nexeditor_username') !== null || 
+         sessionStorage.getItem('nexeditor_guest_session') === 'true';
+}
+
 function initEditor(roomId) {
+  updateGuestName();
+  
+  document.getElementById('auth-page').style.display = 'none';
   document.getElementById('landing-page').style.display = 'none';
   document.getElementById('app-container').style.display = 'flex';
   
@@ -40,6 +48,14 @@ function initEditor(roomId) {
 }
 
 function handleRouting() {
+  if (!isUserAuthorized()) {
+    document.getElementById('auth-page').style.display = 'flex';
+    document.getElementById('landing-page').style.display = 'none';
+    document.getElementById('app-container').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('auth-page').style.display = 'none';
   const roomId = window.location.hash.replace(/^#/, '').trim();
   if (roomId) {
     initEditor(roomId);
@@ -48,6 +64,14 @@ function handleRouting() {
     document.getElementById('app-container').style.display = 'none';
   }
 }
+
+window.addEventListener('auth-complete', (e) => {
+  const { username } = e.detail;
+  if (!username) {
+    sessionStorage.setItem('nexeditor_guest_session', 'true');
+  }
+  handleRouting();
+});
 
 document.getElementById('btn-create-room').addEventListener('click', () => {
   const newRoomId = crypto.randomUUID().replace(/-/g, '').slice(0, 8);
@@ -71,7 +95,45 @@ window.addEventListener('hashchange', () => {
   if (!view) handleRouting();
 });
 
-handleRouting();
+async function verifySession() {
+  try {
+    const res = await fetch('/api/auth/me');
+    const data = await res.json();
+    if (data && data.user) {
+      localStorage.setItem('nexeditor_username', data.user.name);
+    } else {
+      localStorage.removeItem('nexeditor_username');
+      sessionStorage.removeItem('nexeditor_guest_session');
+    }
+  } catch (err) {
+    console.error('Session verify error:', err);
+  }
+  handleRouting();
+
+  // Update username display on landing page
+  const usernameEl = document.getElementById('landing-username');
+  if (usernameEl) {
+    const name = localStorage.getItem('nexeditor_username');
+    usernameEl.textContent = name || 'Anonymous Guest';
+  }
+}
+
+async function logout() {
+  await fetch('/api/auth/logout', { method: 'POST' });
+  localStorage.removeItem('nexeditor_username');
+  sessionStorage.removeItem('nexeditor_guest_session');
+  window.location.hash = '';
+  window.location.reload();
+}
+
+verifySession();
+
+// Logout buttons
+const logoutLanding = document.getElementById('btn-logout-landing');
+const logoutEditor = document.getElementById('btn-logout-editor');
+if (logoutLanding) logoutLanding.addEventListener('click', logout);
+if (logoutEditor) logoutEditor.addEventListener('click', logout);
+
 
 window.addEventListener('connection-status', (e) => {
   const badge = document.getElementById('connection-badge');

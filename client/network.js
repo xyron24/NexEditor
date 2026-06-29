@@ -8,9 +8,16 @@ import { ydoc, awareness } from './crdt.js';
 
 const io = window.io;
 
-const guestName = 'Guest_' + Math.floor(Math.random() * 900 + 100);
+export let guestName = localStorage.getItem('nexeditor_username') || ('Guest_' + Math.floor(Math.random() * 900 + 100));
 const hue = Math.floor(Math.random() * 360);
-const guestColor = `hsl(${hue}, 70%, 60%)`;
+export const guestColor = `hsl(${hue}, 70%, 60%)`;
+
+export function updateGuestName() {
+  const saved = localStorage.getItem('nexeditor_username');
+  if (saved) {
+    guestName = saved;
+  }
+}
 
 let socket = null;
 let currentRoomId = null;
@@ -49,14 +56,16 @@ ydoc.on('update', (update, origin) => {
 export function connect(roomId) {
   currentRoomId = roomId;
 
-  socket = io({ transports: ['websocket'] });
+  socket = io({ 
+    transports: ['websocket'],
+    withCredentials: true
+  });
 
   socket.on('connect', () => {
     isConnected = true;
 
     socket.emit('join-room', {
       roomId,
-      name: guestName,
       color: guestColor,
     });
 
@@ -159,4 +168,4 @@ function _dispatch(eventName, detail) {
   window.dispatchEvent(new CustomEvent(eventName, { detail }));
 }
 
-export { guestName, guestColor };
+// Exported variables and functions are defined above as inline exports.
